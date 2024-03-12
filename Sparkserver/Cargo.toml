@@ -1,0 +1,16 @@
+[package]
+name = "Sparkserver"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aws-config = "1.1.7"
+aws-sdk-sqs = "1.15.0"
+axum = "0.7.4"
+dotenv = "0.15.0"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
+sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio-rustls"] }
+tokio = { version = "1.36.0", features = ["rt-multi-thread", "full"] }
