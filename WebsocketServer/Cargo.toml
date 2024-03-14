@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 
-socketioxide = { version = "0.8", features = ["state"] } # 0.8
 tokio = { version = "1", features = ["full"] }
 axum = { version = "0.7.4", features = ["ws"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -17,3 +16,4 @@ tower-http = { version = "0.5", features = ["cors"]}
 aws-config = "1.1.7"
 aws-sdk-sqs = "1.15.0"
 dotenv = "0.15.0"
+socketioxide = "0.11.0"
