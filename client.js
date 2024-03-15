@@ -12,9 +12,12 @@ export class Spark {
 		this.#apiKey = key;
 		this.#groupId = "";
 		this.#state = true;
-		this.#socket = io("ws://localhost:3000", { auth: { // socket instance
-			token: key
-		}}); 
+
+		this.#socket = io("ws://localhost:3000", {
+			auth: {
+				token: this.#apiKey,
+			}
+		}); 
 
         this.#socket.on("ERROR", (message) => { 
             console.error(chalk.bgBlack.redBright("Spark Error:", message));
@@ -54,9 +57,9 @@ export class Spark {
 let spark = new Spark("q2w3e4r5t6y7u");
 spark.subscribe("cfvgbhnj");
 
-spark.on("MESSAGE", (data) => {
-	console.log("CALLBACK EXECUTED: ",data);
-})
+// spark.on("MESSAGE", (data) => {
+// 	console.log("CALLBACK EXECUTED: ",data);
+// })
 
 
 
