@@ -84,8 +84,8 @@ async fn req_handler(
 
     println!("REQUEST PAYLOD: {:?}", payload);
 
-    // let _ = io.join(payload.group_id);
-    // let _ = io.to(payload.group_id).emit(payload.event_name, payload.message);
+    let _ = io.join(payload.group_id);
+    let _ = io.to(payload.group_id).emit(payload.event_name, payload.message);
 
     info!("BroadCasted the message to clients !!");
     
@@ -101,8 +101,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (layer, io) = SocketIo::builder().with_state(messages).build_layer();
 
     io.ns("/", on_connect);
-
-    
 
     let shared_state = io.clone();
 
