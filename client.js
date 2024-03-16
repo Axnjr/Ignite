@@ -23,16 +23,21 @@ export class Spark {
             console.error(chalk.bgBlack.redBright("Spark Error:", message));
         });
 
-        this.#socket.on("OK", (message) => { 
-            console.log("Spark Subscription succesful:", message);
-        });
+        this.#socket.on("OK", (message) => { console.log(message) });
 	}
 
 	async subscribe(groupId) {
 		this.#groupId = groupId;
-		this.#socket.emit("JOIN", groupId, (mes) => {
-			console.log(chalk.bgCyanBright.magentaBright(mes));
+
+		console.log("Attempting to subscribe to room !!");
+
+		this.#socket.emit("JOIN", `${this.#apiKey}_${groupId}`, (data) => {
+			console.log(data);
+			console.log("Subscribed to room !!");
+			this.#state = true;
 		});
+
+		this.#socket.emit("message", groupId);
 	}
 
 	async on(eventName, callback){
@@ -54,8 +59,8 @@ export class Spark {
 }
 
 
-let spark = new Spark("q2w3e4r5t6y7u");
-spark.subscribe("cfvgbhnj");
+let spark = new Spark("abc123");
+spark.subscribe("emails");
 
 // spark.on("MESSAGE", (data) => {
 // 	console.log("CALLBACK EXECUTED: ",data);
