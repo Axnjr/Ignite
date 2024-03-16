@@ -59,12 +59,12 @@ export class Spark {
 }
 
 
-let spark = new Spark("abc123");
-spark.subscribe("emails");
+let spark = new Spark("RadhaKrishna");
+spark.subscribe("news");
 
-// spark.on("MESSAGE", (data) => {
-// 	console.log("CALLBACK EXECUTED: ",data);
-// })
+spark.on("message", (data) => {
+	console.log("CALLBACK EXECUTED: ",data);
+})
 
 
 
