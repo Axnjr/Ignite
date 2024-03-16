@@ -9,7 +9,6 @@ use socketioxide::{
 use dotenv::dotenv;
 use serde::Deserialize;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use tokio::sync::broadcast;
 use std::env;
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
@@ -21,19 +20,52 @@ struct MyAuthData {
 
 #[derive(Debug, Deserialize)]
 struct Message {
-    api_key: String,
-    group: String,
+    key: String,
+    group_id: String,
     event_name: String,
     message: String
+}
+
+struct PollingCounters {
+    null_counter: i32,
+    full_counter: i32
+}
+
+impl PollingCounters {
+    fn reset(&mut self) {
+        self.null_counter = 0;
+        self.full_counter = 0;
+    }
+
+    fn incre_null_counter(&mut self) {
+        self.null_counter = self.null_counter + 1;
+    }
+
+    fn incre_full_counter(&mut self) {
+        self.full_counter = self.full_counter + 1;
+    }
+
+    fn reset_null_counter(&mut self) {
+        self.null_counter = 0;
+    }
+
+    fn reset_full_counter(&mut self) {  
+        self.full_counter = 0;
+    }
 }
 
 async fn broadcast_queue_messages(socket: SocketRef) {
 
     let sqs_client = Client::new(&aws_sdk_config().await);
 
-    let mut stale_counter = 0;
-    const SLEEP_DURATION_AT_START: u64 = 10;
-    let mut sleep_duration: u64 = 10;
+    let mut counters = PollingCounters {
+        null_counter: 0,
+        full_counter: 5
+    };
+
+    let polling_factor : i32 = 3;
+    let mut sleep_duration: u64 = 5;
+    const SLEEP_DURATION_AT_START: u64 = 5;
 
     loop {
 
@@ -46,32 +78,55 @@ async fn broadcast_queue_messages(socket: SocketRef) {
             .expect("Error recieving messages from Message Queue ☠️😱")
         ;
 
-        // no messages are being recived increase the stale_counter
+        // no messages are being recived increase the null_counter
         if mes.messages().len() == 0 {
-            stale_counter = stale_counter + 1;
+            counters.incre_null_counter();
+        }
+        // if all messages i.e messages.len() == max_number_of_messages are recived then increase the full_counter
+        else if mes.messages().len() == 5 {
+            counters.incre_full_counter();
+            sleep_duration = SLEEP_DURATION_AT_START;
+        }
+        // reset all counter if messages are recived in between 0 - 5
+        else if mes.messages().len() > 0 && mes.messages().len() < 5 {
+            counters.reset();
+        }
+
+         // if null_counter is greater than 5 then increase the sleep_duration by 5 for making less requests to SQS
+         if counters.null_counter > polling_factor {
+            sleep_duration = sleep_duration * polling_factor as u64;
+
+            println!("CHANGED AT LINE 98 sleep_duration: {}", sleep_duration);
+
+            counters.reset_null_counter();
+            tokio::time::sleep(std::time::Duration::from_secs(sleep_duration)).await;
             continue;
         }
 
-        // if stale_counter is greater than 10 then increase the sleep_duration by 10 for making less requests to SQS
-        if stale_counter > 10 {
-            sleep_duration = sleep_duration * 10;
-            stale_counter = 0;
-        }
+        if counters.full_counter > polling_factor {
+            sleep_duration = sleep_duration / polling_factor as u64;
 
-        // however if we start to recieve all 5 messages then reset the sleep_duration to SLEEP_DURATION_AT_START
-        if mes.messages().len() == 5 {
-            sleep_duration = SLEEP_DURATION_AT_START;
+            println!("CHANGED AT LINE 109 sleep_duration: {}", sleep_duration);
+
+            counters.reset_full_counter();
         }
 
         for message in mes.messages() {
-            let message_body = message.body().unwrap();
-            let message_body_json: Message = serde_json::from_str(&message_body).unwrap();
+            let mes = message.body().unwrap();
+            let mes: Message = serde_json::from_str(mes).unwrap();
 
-            let _ = socket.within(message_body_json.api_key+&message_body_json.group).emit(message_body_json.event_name, message_body_json.message);
+            println!("------------------------");
+            println!("JSON MESSAGE: {:#?}", mes);
+            println!("------------------------");
+
+            let _ = socket
+                .within(mes.key + "_" + &mes.group_id)
+                .emit(mes.event_name, mes.message)
+            ;
 
             let _ = sqs_client
                 .delete_message()
-                .queue_url("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                .queue_url("https://sqs.ap-south-1.amazonaws.com/736854829789/WSQ")
                 .receipt_handle(message.receipt_handle().unwrap())
                 .send()
                 .await
@@ -79,6 +134,10 @@ async fn broadcast_queue_messages(socket: SocketRef) {
             ;
 
             println!("Message Deleted from Message Queue ✅👍🏻");
+        }
+
+        if sleep_duration > 3599 {
+            sleep_duration = SLEEP_DURATION_AT_START;
         }
 
         tokio::time::sleep(std::time::Duration::from_secs(sleep_duration)).await;
@@ -150,21 +209,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
-}
-
-
-
-
-
-
-async fn on_connect( socket: SocketRef, Data(auth): Data<MyAuthData>, db_sate: State<Pool<Postgres>>, ) {
-    /*
-    * 
-    * REGISTER ALL HANDLERS
-    * AUTHENTICATE THE CONNECTED CLIENT WITH THEIR "auth.token"
-    * IF UN-AUTHORIZED THEN DISCONNECT THE CLIENT
-    * KEEP LISTENING TO SQS MESSAGES AND BROADCAST THEM TO THE RESPECTIVE CLIENT
-    * 
-    */
-    let _ = socket.emit("OK", "Server Connected !");
 }
