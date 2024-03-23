@@ -1,0 +1,25 @@
+FROM messense/rust-musl-cross:x86_64-musl as chef
+
+RUN cargo install cargo-chef
+
+WORKDIR /ignite/WebsocketServer
+
+ENV DB_URL=postgresql://yakshit:-eZfWw2zQKffFmvntDaL-g@sparkdb-6147.6xw.aws-ap-southeast-1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full
+ENV AWS_ACCESS_KEY_ID=AKIA2XD7YNLO5QLNWIUE
+ENV AWS_SECRET_ACCESS_KEY=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
+
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /ignite/WebsocketServer/recipe.json recipe.json
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+COPY . .
+RUN cargo build --release --target x86_64-unknown-linux-musl
+
+FROM scratch
+COPY --from=builder /ignite/WebsocketServer/target/x86_64-unknown-linux-musl/release/WebsocketServer /WebsocketServer
+ENTRYPOINT ["/WebsocketServer"]
+EXPOSE 3000
