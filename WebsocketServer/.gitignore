@@ -1,3 +1,6 @@
 target
 
+
+dockefile
+docker-compose.yml
 .env
