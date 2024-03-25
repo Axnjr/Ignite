@@ -1,5 +1,7 @@
+use std::env;
+
 use crate::structs;
-use aws_config::{BehaviorVersion, SdkConfig};
+use aws_config::{meta::region::RegionProviderChain, BehaviorVersion, Region, SdkConfig};
 use aws_sdk_sqs::client::Client;
 use socketioxide::extract::SocketRef;
 use structs::{ PollingCounters, Message };
@@ -46,7 +48,7 @@ pub async fn broadcast_queue_messages(socket: SocketRef) {
          if counters.null_counter > polling_factor {
             sleep_duration = sleep_duration * polling_factor as u64;
 
-            println!("CHANGED AT LINE 98 sleep_duration: {}", sleep_duration);
+            println!("CHANGED AT LINE 49 sleep_duration: {}", sleep_duration);
 
             counters.reset_null_counter();
             tokio::time::sleep(std::time::Duration::from_secs(sleep_duration)).await;
@@ -97,5 +99,15 @@ pub async fn broadcast_queue_messages(socket: SocketRef) {
 }
 
 async fn aws_sdk_config() -> SdkConfig {
-    aws_config::defaults(BehaviorVersion::latest()).load().await
+
+    let provider = RegionProviderChain::first_try(env::var("REGION")
+        .ok()
+        .map(Region::new))
+        .or_default_provider()
+        .or_else(Region::new("ap-south-1"))
+    ;
+
+    aws_config::from_env().region(provider).load().await
+
+    // println!("SDK CONFIG: {:#?}", t.region());
 }
