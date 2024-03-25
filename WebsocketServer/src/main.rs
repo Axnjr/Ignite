@@ -1,6 +1,7 @@
 mod polling;
 mod structs;
 
+use axum::routing::get;
 use socketioxide::{
     extract::{ 
         AckSender, 
@@ -19,7 +20,7 @@ use sqlx::{
 use dotenv::dotenv;
 use structs::MyAuthData;
 use polling::broadcast_queue_messages;
-use std::env;
+use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 
@@ -73,13 +74,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = axum::Router::new()
         .with_state(io)
+        // .route("/test", get(|| async move { println!("Test Route"); "Test Route" } ))
         .layer(ServiceBuilder::new().layer(CorsLayer::permissive()))
         .layer(layer)
     ;
 
-    println!("Starting server");
+    let port = std::env::var("PORT")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(3000)
+    ;
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let address = SocketAddr::from(([0, 0, 0, 0], port));
+    println!("Server Started On Port: {}", address);
+
+    let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
