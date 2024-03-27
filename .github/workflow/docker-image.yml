@@ -1,0 +1,36 @@
+name: CICD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+     paths: 
+      - 'WebsocketServer/**'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Login Dockerhub
+
+      env:
+        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      
+    - name: Build the Docker image
+      run: docker build -t axnjr/ignition_wsss .
+    - name: Push to Dockerhub
+      run: docker push axnjr/ignition_wsss:latest
+
+  deploy:
+    needs: build
+    runs-on: [ignition_wsss_aws_runner]
+    steps:
+      - name: Pulling image from docker hub
+        run: docker pull axnjr/ignition_wsss:latest
+      - name: Deleting older container
+        run: docker rm -f axnjr/ignition_wsss
+      - name: Run docker container
+        run: docker run -e DB_URL=${{ secrets.DB_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e REGION=${{ secrets.REGION }} -e PORT=${{ secrets.PORT }} --network host --name ignition_wsss axnjr/ignition_wsss:latest
