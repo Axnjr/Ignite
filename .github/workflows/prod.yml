@@ -28,7 +28,7 @@ jobs:
   #         tags: axnjr/ignition_wsss:latest
 
   deploy:
-    needs: build
+    # needs: build
     runs-on: self-hosted
     steps:
       - name: Pulling image from docker hub

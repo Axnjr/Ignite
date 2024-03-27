@@ -13,7 +13,7 @@ export class Spark {
 		this.#groupId = "";
 		this.#state = true;
 
-		this.#socket = io("ws://localhost:3000", {
+		this.#socket = io("ws://3.109.182.38:3000", {
 			auth: {
 				token: this.#apiKey,
 			}
@@ -23,7 +23,7 @@ export class Spark {
             console.error(chalk.bgBlack.redBright("Spark Error:", message));
         });
 
-        this.#socket.on("OK", (message) => { console.log(message) });
+        this.#socket.on("connect", (message) => { console.log(message) });
 	}
 
 	async subscribe(groupId) {
@@ -48,7 +48,7 @@ export class Spark {
 				)
 			);
 		};
-		console.log(callback.toString())
+		// console.log(callback.toString())
 		this.#socket.on(eventName, callback);
 	}
 
@@ -59,12 +59,14 @@ export class Spark {
 }
 
 
-let spark = new Spark("RadhaKrishna");
-spark.subscribe("news");
-
-spark.on("message", (data) => {
-	console.log("CALLBACK EXECUTED: ",data);
-})
+for (let i = 0; i < 500; i++) {
+	
+	let spark1 = new Spark("abc123");
+	spark1.subscribe("q2w3e4r5t6y7u");
+	spark1.on("message", (data) => {
+		console.log("CALLBACK EXECUTED",i,"th :",data);
+	})
+}
 
 
 
