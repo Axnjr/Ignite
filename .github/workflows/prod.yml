@@ -36,4 +36,6 @@ jobs:
       - name: Deleting older container
         run: docker rm -f ignition_wss-shared
       - name: Run docker container
-        run: docker run -e DB_URL=${{ secrets.DB_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e REGION=${{ secrets.REGION }} -e PORT=${{ secrets.PORT }} --network host --name ignition_wss-shared axnjr/ignition_wsss:latest
+        run: docker run -d -e DB_URL=${{ secrets.DB_URL }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e REGION=${{ secrets.REGION }} -e PORT=${{ secrets.PORT }} --network host --name ignition_wss-shared axnjr/ignition_wsss:latest
+      - name: Check container logs
+        run: docker logs ignition_wss-shared
