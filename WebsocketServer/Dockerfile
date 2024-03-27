@@ -18,11 +18,13 @@ FROM rust:latest AS builder
 # Copy the files from your host to your current location.
 COPY ./ ./
 
+ENV PORT=3000
+
 # Build your program for release
 RUN cargo build --release
 
 # Use Debian stable slim as the runtime container
-FROM debian:bookworm-slim
+FROM debian:stable-slim
 
 # Install ca-certificates
 # Update the package lists, install ca-certificates, and clean up cache to reduce image size
@@ -31,8 +33,8 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 # Copy the binary from the builder stage to the runtime container
 COPY --from=builder /target/release/WebsocketServer /target/release/WebsocketServer
 
-# Command to run the executable
-CMD ["./target/release/WebsocketServer"]
-
 # Expose the port the server listens on
 EXPOSE 3000
+
+# Command to run the executable
+CMD ["/target/release/WebsocketServer"]

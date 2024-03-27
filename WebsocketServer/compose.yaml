@@ -10,11 +10,12 @@
 services:
   server:
     build:
+      command: /target/release/WebsocketServer
       context: .
-      target: final
+      # target: final
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - 3000:3000
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

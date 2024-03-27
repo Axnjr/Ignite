@@ -74,7 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = axum::Router::new()
         .with_state(io)
-        // .route("/test", get(|| async move { println!("Test Route"); "Test Route" } ))
+        .route("/test", get(|| async move { println!("Test Route"); "Test Route" } ))
         .layer(ServiceBuilder::new().layer(CorsLayer::permissive()))
         .layer(layer)
     ;
