@@ -11,18 +11,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Login Dockerhub
+      - uses: actions/checkout@v3
 
-      env:
-        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      
-    - name: Build the Docker image
-      run: docker build -t axnjr/ignition_wsss .
-    - name: Push to Dockerhub
-      run: docker push axnjr/ignition_wsss:latest
+      - name: Loging in to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./WebsocketServer
+          file: ./WebsocketServer/Dockerfile
+          push: true
+          tags: axnjr/ignition_wsss:latest
 
   deploy:
     needs: build
