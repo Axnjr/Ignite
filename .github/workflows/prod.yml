@@ -29,7 +29,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [ignition_wsss_aws_runner]
+    runs-on: ignition_wsss_aws_runner
     steps:
       - name: Pulling image from docker hub
         run: docker pull axnjr/ignition_wsss:latest
