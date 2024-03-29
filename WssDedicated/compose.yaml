@@ -1,0 +1,9 @@
+services:
+  server:
+    build:
+      command: /target/release/WssDedicated
+      context: .
+      # target: final
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000

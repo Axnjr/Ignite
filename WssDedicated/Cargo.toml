@@ -1,0 +1,20 @@
+[package]
+name = "WssDedicated"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.7.4", features = ["ws"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tower = "0.4.13"
+tower-http = { version = "0.5", features = ["cors"]}
+aws-sdk-sqs = "1.1.7"
+aws-config = { version = "1.1.8", features = ["behavior-version-latest"] }
+dotenv = "0.15.0"
+socketioxide = { version = "0.12.0", features = ["state"] }
+sqlx = { version = "0.7.4", features = ["postgres", "runtime-tokio-rustls"] }
