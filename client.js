@@ -13,7 +13,7 @@ export class Spark {
 		this.#groupId = "";
 		this.#state = true;
 
-		this.#socket = io("ws://3.109.182.38:3000", {
+		this.#socket = io("ws://localhost:3000", {
 			auth: {
 				token: this.#apiKey,
 			}
@@ -40,6 +40,15 @@ export class Spark {
 		this.#socket.emit("message", groupId);
 	}
 
+	async emit(eventName, groupId, message){
+		console.log("EMITTING EVENT !!")
+		this.#socket.emit("MESSAGE", JSON.stringify({
+			event_name: eventName,
+			group_id: groupId,
+			mes: message,
+		}))
+	}
+
 	async on(eventName, callback){
 		if(this.#groupId.length < 1){
 			console.error(
@@ -58,15 +67,25 @@ export class Spark {
 
 }
 
+let spark1 = new Spark("abc123");
+let s2 = new Spark("abc123");
 
-for (let i = 0; i < 500; i++) {
+spark1.emit("news", "q2w3e4r5t6y7u", "hello world");
+
+s2.subscribe("q2w3e4r5t6y7u");
+
+s2.on("news", (data) => {
+	console.log("s2 client got message for event `news`: ", data);
+})
+
+// for (let i = 0; i < 500; i++) {
 	
-	let spark1 = new Spark("abc123");
-	spark1.subscribe("q2w3e4r5t6y7u");
-	spark1.on("message", (data) => {
-		console.log("CALLBACK EXECUTED",i,"th :",data);
-	})
-}
+// 	let spark1 = new Spark("abc123");
+// 	spark1.subscribe("q2w3e4r5t6y7u");
+// 	spark1.on("message", (data) => {
+// 		console.log("CALLBACK EXECUTED",i,"th :",data);
+// 	})
+// }
 
 
 
