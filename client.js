@@ -23,7 +23,7 @@ export class Spark {
             console.error(chalk.bgBlack.redBright("Spark Error:", message));
         });
 
-        this.#socket.on("connect", (message) => { console.log(message) });
+        this.#socket.on("CONNECTED", (message) => { console.log(chalk.bgCyanBright.bold(message)) });
 	}
 
 	async subscribe(groupId) {
@@ -42,11 +42,11 @@ export class Spark {
 
 	async emit(eventName, groupId, message){
 		console.log("EMITTING EVENT !!")
-		this.#socket.emit("MESSAGE", JSON.stringify({
-			event_name: eventName,
-			group_id: groupId,
-			mes: message,
-		}))
+		this.#socket.emit("MESSAGE", {
+			event: eventName,
+			room: this.#apiKey+"_"+groupId,
+			message: message,
+		})
 	}
 
 	async on(eventName, callback){
@@ -67,16 +67,17 @@ export class Spark {
 
 }
 
-let spark1 = new Spark("abc123");
+
 let s2 = new Spark("abc123");
 
-spark1.emit("news", "q2w3e4r5t6y7u", "hello world");
-
-s2.subscribe("q2w3e4r5t6y7u");
+s2.subscribe("radha");
 
 s2.on("news", (data) => {
 	console.log("s2 client got message for event `news`: ", data);
 })
+
+let spark1 = new Spark("abc1239999");
+spark1.emit("news", "radha", "hello world");
 
 // for (let i = 0; i < 500; i++) {
 	
