@@ -1,8 +1,6 @@
-// mod polling;
-mod structs;
-
 use axum::routing::get;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use socketioxide::{
     extract::{ 
         AckSender, 
@@ -11,9 +9,7 @@ use socketioxide::{
     },
     SocketIo,
 };
-
 use dotenv::dotenv;
-use structs::MyAuthData;
 use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
@@ -25,11 +21,9 @@ struct ClientPayload {
     message: String,
 }
 
-fn client_message_handler(socket: SocketRef, Data(payload): Data<ClientPayload>) {
-    // broadcast emit given message, as the given event, to all clients, in the given room
-    // println!("👀🤗🫡 Received Message: {:#?}", payload);
-    // let _ = socket.within(payload.room).broadcast().emit(payload.event, payload.message);
-    println!("👀🤗🫡 Received Message on event !!!! {:#?}", payload);
+#[derive(Debug, Deserialize)]
+pub struct MyAuthData {
+    pub token: String,
 }
 
 fn join_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
@@ -40,11 +34,19 @@ fn join_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
 }
 
 async fn authenticate_clients(socket: SocketRef, auth: MyAuthData) {
-
-    // check if auth.token is valid by comparing it an key present in ec2 volume
+    // check if auth.token is valid by comparing it an key present in ec2 volume or env
     // if valid, add socket to the group
     // else, send error message to the client
+    let validation_token = env::var("VALIDATION_TOKEN").expect("ENVIROMENT VARIABLE NOT FOUND ☠️ ❌ 😱");
 
+    if auth.token != validation_token {
+        println!("Client Authentication Failed");
+        let _ = socket.emit("ERROR", "Authentication Failed: `auth.token` doesnt match with what is present on the VM");
+        let _ = socket.disconnect();
+        return ;
+    }
+
+    let _ = socket.emit("CONNECTED", "Connection succesfull !");
 }
 
 #[tokio::main]
@@ -55,8 +57,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (layer, io) = SocketIo::builder().build_layer();
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move {
+
         s.on("JOIN", join_handler);               // Register a handler for the "JOIN" event
-        s.on("MESSAGE", client_message_handler);                     
+
+        s.on("MESSAGE", |s: SocketRef, Data::<Value>(payload)| async move {
+
+            let payload = serde_json::from_value::<ClientPayload>(payload).unwrap();
+
+            // broadcast emit given message, as the given event, to all clients, in the given room
+            println!("Received Message to be Broadcasted: {:#?}", payload);
+            let _ = s.within(payload.room).emit(payload.event, payload.message);  
+        });                     
+
         authenticate_clients(s, auth).await;     // Authenticate the client with their "auth.token"
     });
 
