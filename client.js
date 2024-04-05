@@ -13,7 +13,7 @@ export class Spark {
 		this.#groupId = "";
 		this.#state = true;
 
-		this.#socket = io("ws://localhost:3000", {
+		this.#socket = io("ws://52.66.244.200:3000", {
 			auth: {
 				token: this.#apiKey,
 			}
@@ -76,7 +76,7 @@ s2.on("news", (data) => {
 	console.log("s2 client got message for event `news`: ", data);
 })
 
-let spark1 = new Spark("abc1239999");
+let spark1 = new Spark("abc123");
 spark1.emit("news", "radha", "hello world");
 
 // for (let i = 0; i < 500; i++) {
