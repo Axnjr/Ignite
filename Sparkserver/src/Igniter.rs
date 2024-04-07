@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use sqlx::{ Pool, Postgres, Row };
 use axum::extract::Json;
 use crate::Threads;
@@ -12,7 +13,7 @@ pub struct IgniteReq {
     pub key: String,
 }
 
-pub async fn igniter(req_body: Json<IgniteReq>, db_client: Pool<Postgres>) -> String {
+pub async fn igniter(req_body: Json<IgniteReq>, db_client: Pool<Postgres>) -> Json<Value> {
 
     let ir = IgniteReq {
         group_id: req_body.group_id.to_owned(),
@@ -32,7 +33,10 @@ pub async fn igniter(req_body: Json<IgniteReq>, db_client: Pool<Postgres>) -> St
 
         Err(err) => {
             print!("Error OCCURED: {:?}", err);
-            return format!("Internal Error: {:#?}", err);
+            return Json(json!({ 
+                "status": "500" ,
+                "message": "Internal Server Error: Application server down"
+            }));
         }
     }
 }
