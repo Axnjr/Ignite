@@ -1,15 +1,23 @@
 use aws_sdk_sqs::client::Client;
+use axum::Json;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use std::sync::Arc;
 use aws_config::{ BehaviorVersion, SdkConfig };
 use crate::Igniter;
 use Igniter::IgniteReq;
 
-
 async fn aws_sdk_config() -> SdkConfig {
     aws_config::defaults(BehaviorVersion::latest()).load().await
 }
 
-pub async fn forward_request_to_ws_server(status: String, req: IgniteReq) -> String {
+#[derive(Debug,Serialize, Deserialize)]
+pub struct IgnitionResponse {
+    status: i32,
+    message: String,
+}
+
+pub async fn forward_request_to_ws_server(status: String, req: IgniteReq) -> Json<Value> {
 
     let sqs_client = Client::new(&aws_sdk_config().await);
 
@@ -51,10 +59,16 @@ pub async fn forward_request_to_ws_server(status: String, req: IgniteReq) -> Str
             ;
         });
 
-        return String::from("Event broadcasted to your clients !");
+        return Json(json!({
+            "status": 200,
+            "message": "Request forwarded to the WS-Server".to_owned(),
+        }));
     }
 
     // return access denied or ....
-    return String::from("You have reached your daily ignite limits 😥😓🙃"); 
+    return Json(json!({
+        "status": 403,
+        "message": "Request denied, daily limit reached".to_owned(),
+    })); 
    
 }

@@ -9,7 +9,6 @@ use std::env;
 use Igniter::IgniteReq;
 use Igniter::igniter;
 
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
@@ -23,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = axum::Router::new()
         .route("/ignite", post(|body: Json<IgniteReq>| async { 
-            igniter(body, db_client).await; 
+            igniter(body, db_client).await
         })) // .layer( ServiceBuilder::new().layer(CorsLayer::permissive()).layer(layer) )
     ;
 
