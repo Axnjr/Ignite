@@ -32,6 +32,12 @@ fn join_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
     ack.send("Joined the group !!").ok(); 
 }
 
+fn leave_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
+    println!("👀🤗🫡 Received Leave Group Request for Room: {:?}", room);
+    let _ = socket.leave(room.clone());
+    ack.send("Left the group !!").ok();
+}
+
 async fn authenticate_clients(socket: SocketRef, auth: MyAuthData, db_sate: Pool<Postgres>) {
 
     let resp = sqlx::query(
@@ -69,6 +75,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move {
         s.on("JOIN", join_handler);                        // Register a handler for the "JOIN" event
+        s.on("LEAVE", leave_handler);                      // Register a handler for the "LEAVE" event
         authenticate_clients(s, auth, db).await; // Authenticate the client with their "auth.token"
     });
 
