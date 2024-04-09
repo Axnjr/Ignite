@@ -1,4 +1,4 @@
-use axum::routing::get;
+use axum::{http::Method, routing::get};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use socketioxide::{
@@ -12,7 +12,8 @@ use socketioxide::{
 use dotenv::dotenv;
 use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
+use http::header::CONTENT_TYPE;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct ClientPayload {
@@ -56,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (layer, io) = SocketIo::builder().build_layer();
 
-    io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move {
+    io.ns("/", |s: SocketRef| async move { // , Data::<MyAuthData>(auth)
 
         s.on("JOIN", join_handler);               // Register a handler for the "JOIN" event
 
@@ -69,14 +70,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let _ = s.within(payload.room).emit(payload.event, payload.message);  
         });                     
 
-        authenticate_clients(s, auth).await;     // Authenticate the client with their "auth.token"
+        // authenticate_clients(s, auth).await;     // Authenticate the client with their "auth.token"
     });
+
+    let cors = CorsLayer::new()
+        // .allow_methods([Method::GET, Method::POST])
+        // .allow_origin(Any)
+        .allow_headers(Any)
+    ;
 
     let app = axum::Router::new()
         .with_state(io)
         .route("/test", get(|| async move { println!("Test Route"); "Test Route" } ))
-        .layer(ServiceBuilder::new().layer(CorsLayer::permissive()))
-        .layer(layer)
+        // .layer(cors)//ServiceBuilder::new().layer(CorsLayer::permissive()))
+        // .layer(layer)
+        .layer(
+            ServiceBuilder::new()
+                .layer(CorsLayer::permissive())
+                .layer(layer),
+        );
+        
     ;
 
     let port = std::env::var("PORT")
