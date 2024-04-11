@@ -1,12 +1,10 @@
 use std::env;
-
-use crate::structs;
-use aws_config::{meta::region::RegionProviderChain, BehaviorVersion, Region, SdkConfig};
+use crate::structs::{self, get_ws};
+use aws_config::{meta::region::RegionProviderChain, Region, SdkConfig};
 use aws_sdk_sqs::client::Client;
-use socketioxide::extract::SocketRef;
 use structs::{ PollingCounters, Message };
 
-pub async fn broadcast_queue_messages(socket: SocketRef) {
+pub async fn broadcast_queue_messages() {
 
     let sqs_client = Client::new(&aws_sdk_config().await);
 
@@ -43,7 +41,6 @@ pub async fn broadcast_queue_messages(socket: SocketRef) {
         else if mes.messages().len() > 0 && mes.messages().len() < 5 {
             counters.reset();
         }
-
          // if null_counter is greater than 5 then increase the sleep_duration by 5 for making less requests to SQS
          if counters.null_counter > polling_factor {
             sleep_duration = sleep_duration * polling_factor as u64;
@@ -72,10 +69,12 @@ pub async fn broadcast_queue_messages(socket: SocketRef) {
             println!("JSON MESSAGE: {:#?}", mes);
             println!("------------------------");
 
-            let _ = socket
-                .within(mes.key + "_" + &mes.group_id)
-                .emit(mes.event_name, mes.message)
-            ;
+            match get_ws(&mes.key) {
+                Some(socket) => {
+                    let _ = socket.within(mes.key + "_" + &mes.group_id).emit(mes.event_name, mes.message);
+                },
+                None => {}
+            };
 
             let _ = sqs_client
                 .delete_message()
