@@ -2,6 +2,7 @@ mod polling;
 mod structs;
 
 use axum::routing::get;
+use serde::ser;
 use socketioxide::{
     extract::{ 
         AckSender, 
@@ -18,11 +19,13 @@ use sqlx::{
 };
 
 use dotenv::dotenv;
-use structs::MyAuthData;
+use structs::{insert_ws, ClientMessage, MyAuthData};
 use polling::broadcast_queue_messages;
-use std::{env, net::SocketAddr};
+use std::{env,net::SocketAddr};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
+
+use crate::structs::init_map;
 
 
 fn join_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
@@ -38,28 +41,32 @@ fn leave_handler(socket: SocketRef, Data(room): Data<String>, ack: AckSender) {
     ack.send("Left the group !!").ok();
 }
 
-async fn authenticate_clients(socket: SocketRef, auth: MyAuthData, db_sate: Pool<Postgres>) {
+// fn message_handler(socket: SocketRef, Data(message): Data<ClientMessage>, ack: AckSender) {
+    
+// }
 
-    let resp = sqlx::query(
-        &format!(r#" SELECT * FROM userkeystatus WHERE apiKey = '{}'; "#, auth.token ))
-        .fetch_one(&db_sate)
-        .await
-    ;
+async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool<Postgres>) {
+    // let resp = sqlx::query(
+    //     &format!(r#" SELECT * FROM userkeystatus WHERE apiKey = '{}'; "#, auth ))
+    //     .fetch_one(&db_sate)
+    //     .await
+    // ;
 
-    if resp.is_err() {
-        let _ = socket.emit("ERROR", "Invalid API Key");
-        let _ = socket.disconnect();
-        println!("User with Invalid API Key made a request ❌😐🤨");
-        return;
-    }
+    // if resp.is_err() {
+    //     let _ = socket.emit("ERROR", "Invalid API Key");
+    //     let _ = socket.disconnect();
+    //     println!("User with Invalid API Key made a request ❌😐🤨");
+    //     return;
+    // }
 
-    broadcast_queue_messages(socket).await;
+    insert_ws(auth, socket);
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     dotenv().ok();
+    init_map();
 
     let url = env::var("DB_URL").expect("DB Connection URL not found ☠️❌😬😱");
     let db_client = PgPoolOptions::new()
@@ -74,9 +81,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (layer, io) = SocketIo::builder().with_state(db_client).build_layer();
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move {
+
+        // ----- Test event ----- //
+        s.on("client to server event", |s: SocketRef| { 
+            let _ = s.emit("server to client event","Received client to server event"); 
+        });
+        // ----- Test event ----- //
+
+        // s.on("MESSAGE", message_handler);
         s.on("JOIN", join_handler);                        // Register a handler for the "JOIN" event
         s.on("LEAVE", leave_handler);                      // Register a handler for the "LEAVE" event
-        authenticate_clients(s, auth, db).await; // Authenticate the client with their "auth.token"
+        // Authenticate the client with their "auth.token"
+        authenticate_clients(s, auth.token, db).await; 
     });
 
     let app = axum::Router::new()
@@ -93,10 +109,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ;
 
     let address = SocketAddr::from(([0, 0, 0, 0], port));
-    println!("Server Started On Port: {}", address);
+    println!("Server:v3 Started On Port: {}", address);
 
     let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+
+    broadcast_queue_messages().await;
 
     Ok(())
 }
