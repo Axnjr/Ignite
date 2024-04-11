@@ -1,6 +1,6 @@
-const { io } = require("socket.io-client");
+import { io } from "socket.io-client";
 
-const URL = process.env.URL || "http://localhost:3000";
+const URL = process.env.URL || "wss://ignition-wsss-v4.onrender.com";
 const MAX_CLIENTS = 1000;
 const POLLING_PERCENTAGE = 0.05;
 const CLIENT_CREATION_INTERVAL_IN_MS = 10;
@@ -16,7 +16,7 @@ const createClient = () => {
     Math.random() < POLLING_PERCENTAGE ? ["polling"] : ["polling", "websocket"];
 
   const socket = io(URL, {
-    transports,
+    auth: { token: `abc123` },
   });
 
   setInterval(() => {
