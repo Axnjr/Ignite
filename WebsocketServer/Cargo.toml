@@ -17,4 +17,6 @@ aws-sdk-sqs = "1.1.7"
 aws-config = { version = "1.1.8", features = ["behavior-version-latest"] }
 dotenv = "0.15.0"
 socketioxide = { version = "0.12.0", features = ["state"] }
-sqlx = { version = "0.7.4", features = ["postgres", "runtime-tokio-rustls"] }
+sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio-rustls"] }
+tracing-subscriber = "0.3.18"
+tracing = "0.1.40"
