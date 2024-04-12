@@ -1,5 +1,5 @@
 use std::env;
-use crate::structs::{self, get_ws};
+use crate::structs::{self, get_user_from_hash};
 use aws_config::{meta::region::RegionProviderChain, Region, SdkConfig};
 use aws_sdk_sqs::client::Client;
 use structs::{ PollingCounters, Message };
@@ -69,7 +69,7 @@ pub async fn broadcast_queue_messages() {
             println!("JSON MESSAGE: {:#?}", mes);
             println!("------------------------");
 
-            match get_ws(&mes.key) {
+            match get_user_from_hash(&mes.key) {
                 Some(socket) => {
                     let _ = socket.within(mes.key + "_" + &mes.group_id).emit(mes.event_name, mes.message);
                 },
