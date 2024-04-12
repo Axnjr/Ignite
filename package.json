@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "chalk": "^5.3.0",
+    "crypto-js": "^4.2.0",
     "ignition-js-sdk": "^1.0.0-dev",
     "socket.io-client": "^4.7.4",
     "ws": "^8.16.0"
