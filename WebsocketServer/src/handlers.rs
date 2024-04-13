@@ -16,7 +16,7 @@ use crate::structs::{
 };
 
 pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSender) {
-    println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
+    // println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
     decrement_user_hits(&message.key);
     // let _ = socket.leave_all();
     let _ = socket.join(message.group_id.clone());
@@ -24,7 +24,7 @@ pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSe
 }
 
 pub fn leave_handler(socket: SocketRef, Data(room): Data<JoinLeaveRequestData>, ack: AckSender) {
-    println!("👀🤗🫡 Received Leave Group Request for Room: {:?}", room);
+    // println!("👀🤗🫡 Received Leave Group Request for Room: {:?}", room);
     decrement_user_hits(&room.key);
     let _ = socket.leave(room.group_id.clone());
     ack.send("Left the group !!").ok();
