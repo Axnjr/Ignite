@@ -37,8 +37,8 @@ pub fn add_user_to_hash(key: String, user: UserLimits) {
     let mut guarded_hash = unsafe { CONNECTION_HASH.lock().unwrap() };
     if let Some(map) = guarded_hash.as_mut() {
         map.insert(key, user);
-        println!("🤘🚀 Server Connection HashMap: `{}`", map.len());
     }
+    println!("HashMap length: `{}`", guarded_hash.as_ref().unwrap().len());
 }
 
 pub fn remove_user_from_hash(key: &str) {
