@@ -53,12 +53,12 @@ pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool
                     plan: p.to_string(),
                 };
                 add_user_to_hash(auth.clone(), u);
-                println!("User with API Key: {} added to the hashmap 👀🤗🫡", auth);
+                println!("User with API Key: {} added to the hashmap ✌️", auth);
             }
             Err(_err) => {
                 let _ = socket.emit("ERROR", "Invalid API Key");
                 let _ = socket.disconnect();
-                println!("User with Invalid API Key made a request ❌😐🤨");
+                println!("User with Invalid API Key made a request 🤨");
                 return;
             }
         }
