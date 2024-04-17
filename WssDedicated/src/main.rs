@@ -1,6 +1,12 @@
-use axum::{http::Method, routing::get};
-use serde::{Deserialize, Serialize};
+use axum::routing::get;
+
+use serde::{
+    Deserialize, 
+    Serialize
+};
+
 use serde_json::Value;
+
 use socketioxide::{
     extract::{ 
         AckSender, 
@@ -9,11 +15,17 @@ use socketioxide::{
     },
     SocketIo,
 };
+
 use dotenv::dotenv;
-use std::{env, net::SocketAddr};
+
+use std::{
+    env, 
+    net::SocketAddr
+};
+
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
-use http::header::CONTENT_TYPE;
+
+use tower_http::cors::CorsLayer;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct ClientPayload {
@@ -72,12 +84,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // authenticate_clients(s, auth).await;     // Authenticate the client with their "auth.token"
     });
-
-    let cors = CorsLayer::new()
-        // .allow_methods([Method::GET, Method::POST])
-        // .allow_origin(Any)
-        .allow_headers(Any)
-    ;
 
     let app = axum::Router::new()
         .with_state(io)
