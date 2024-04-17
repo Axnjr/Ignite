@@ -65,7 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (layer, io) = SocketIo::builder().with_state(db_client).build_layer();
 
-    io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move { //  Data::<MyAuthData>(auth)
+    io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move {
         // ----- Test event ----- //
         //      s.on("client to server event", |s: SocketRef| {
         //          let _ = s.emit("server to client event", "Received client to server event");
