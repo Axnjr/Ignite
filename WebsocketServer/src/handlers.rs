@@ -15,10 +15,13 @@ use crate::structs::{
     JoinLeaveRequestData
 };
 
+use crate::util::devlog;
+
 pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSender) {
     // println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
     decrement_user_hits(&message.key);
     // let _ = socket.leave_all();
+    devlog(&format!("Recived a join request from {:?}", message));
     let _ = socket.join(message.group_id.clone());
     ack.send("Joined the group !!").ok();
 }
@@ -26,11 +29,13 @@ pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSe
 pub fn leave_handler(socket: SocketRef, Data(room): Data<JoinLeaveRequestData>, ack: AckSender) {
     // println!("👀🤗🫡 Received Leave Group Request for Room: {:?}", room);
     decrement_user_hits(&room.key);
+    devlog(&format!("Recived a leave request from {:?}", room));
     let _ = socket.leave(room.group_id.clone());
     ack.send("Left the group !!").ok();
 }
 
-pub fn message_handler(socket: SocketRef, Data(message): Data<ClientMessage>, ack: AckSender) {
+pub fn message_handler(socket: SocketRef, Data(message): Data<ClientMessage>) {
+    devlog(&format!("Recived a message from {:?}", message));
     if let Some(user) = get_user_from_hash(&message.key) {
         if user.hits <= 0 {
             let _ = socket.emit("ERROR", "💥 Daily Limit Reached 🥹");
