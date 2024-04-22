@@ -74,8 +74,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let cors = CorsLayer::new()
-        // .allow_methods([Method::GET, Method::POST])
-        // .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST])
+        .allow_origin(Any)
         .allow_headers(Any)
     ;
 
@@ -89,7 +89,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .layer(CorsLayer::permissive())
                 .layer(layer),
         );
-        
+        // .layer(cors)
     ;
 
     let port = std::env::var("PORT")
