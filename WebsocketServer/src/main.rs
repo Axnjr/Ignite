@@ -4,7 +4,7 @@ mod util;
 mod handlers;
 mod auth_clients;
 
-use axum::extract::Query;
+use axum::{extract::Query, http::Method};
 
 use axum::routing::get;
 
@@ -43,7 +43,7 @@ use std::{
 
 use tower::ServiceBuilder;
 
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
 
 use crate::{auth_clients::authenticate_clients, handlers::{join_handler, leave_handler, message_handler}};
 
@@ -82,6 +82,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         authenticate_clients(s, auth.token, db).await;
     });
 
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST])
+        .allow_origin(Any)
+        .allow_headers(Any)
+    ;
+
     let app = axum::Router::new()
         .with_state(io)
         .route(
@@ -103,8 +109,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get(|Query(params): Query<UpgradeKey>| async move { 
                 remove_user_from_hash(&params.key);
         }))
-        .layer(ServiceBuilder::new().layer(CorsLayer::permissive()))
-        .layer(layer);
+        .layer(
+            ServiceBuilder::new()
+                .layer(CorsLayer::permissive())
+                .layer(layer),
+        );
 
     let port = std::env::var("PORT")
         .ok()
