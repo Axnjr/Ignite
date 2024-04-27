@@ -2,34 +2,32 @@ use socketioxide::extract::SocketRef;
 
 use sqlx::{Pool, Postgres, Row};
 
-use crate::map::{add_user_to_hash, decrement_user_connections, get_user_from_hash};
+use crate::map::{add_user_to_hash, decrement_user_hits, get_user_from_hash, increment_user_connections};
 
 use crate::structs::UserLimits; 
 
-use crate::util::{
-    get_connection_limit_from_plan_name, 
-    get_request_limit_from_plan_name
-};
+use crate::util::get_request_limit_from_plan_name;
 
 pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool<Postgres>) {
 
     // - Check if user already exists in the hashmap 
     //      - If yes, 
-    //          - check if the user has reached the connection limit ?
+    //          - check if the user has reached the request limit ?
     //              - if yes, disconnect the user
-    //              - if no, decrement the connection limit
+    //              - if no, decrement the request limit & increment the connection count
     // ----------------------------------------------------------- //
     // - If no, check if the user exists in the database
     //      - if yes, add the user to the hashmap
     //      - if no, disconnect the user
    
     if let Some(user) = get_user_from_hash(&auth) {
-        if user.connections <= 0 {
-            let _ = socket.emit("ERROR", "💥 Connection Limit Reached 🥹");
+        if user.hits <= 0 {
+            let _ = socket.emit("ERROR", "💥 Daily request Limit Reached 🥹");
             let _ = socket.disconnect();
             return;
         }
-        decrement_user_connections(&auth);
+        increment_user_connections(&auth);
+        decrement_user_hits(&auth);
     } 
 
     // else {
@@ -49,7 +47,7 @@ pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool
                 let p = resp.try_get::<String, _>("plantype").unwrap();
                 let u = UserLimits {
                     hits: get_request_limit_from_plan_name(&p),
-                    connections: get_connection_limit_from_plan_name(&p) - 1,
+                    connections: 1,
                     plan: p.to_string(),
                 };
                 add_user_to_hash(auth.clone(), u);
