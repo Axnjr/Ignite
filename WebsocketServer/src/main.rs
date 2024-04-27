@@ -26,7 +26,8 @@ use dotenv::dotenv;
 use structs::{
     JoinLeaveRequestData, 
     MyAuthData,
-    UpgradeKey
+    UpgradeKey,
+    ClientMessage,
 };
 
 use map::{
@@ -43,9 +44,18 @@ use std::{
 
 use tower::ServiceBuilder;
 
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{ Any, CorsLayer };
 
-use crate::{auth_clients::authenticate_clients, handlers::{join_handler, leave_handler, message_handler}};
+use crate::handlers::info_handler;
+
+use crate::{ 
+    auth_clients::authenticate_clients, 
+    handlers::{
+        join_handler, 
+        leave_handler, 
+        message_handler
+    }
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -59,21 +69,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .max_connections(5)
         .connect(&url)
         .await
-        .expect("DB CONNECTION FAILED ☠️❌😬😱");
+        .expect("DB CONNECTION FAILED ☠️❌😬😱")
+    ;
 
     let db = db_client.clone();
 
     let (layer, io) = SocketIo::builder().with_state(db_client).build_layer();
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move { //  Data::<MyAuthData>(auth)
+
         // ----- Test event ----- //
-        //      s.on("client to server event", |s: SocketRef| {
-        //          let _ = s.emit("server to client event", "Received client to server event");
-        //      });
+            s.on("client to server event", |s: SocketRef| {
+                let _ = s.emit("server to client event", "Received client to server event");
+            });
         // ----- Test event ----- //
-        s.on("MESSAGE", message_handler);
+        // Register a handler for the "INFO" event
+        s.on("INFO", |Data::<MyAuthData>(payload), ack: AckSender| async move {
+            info_handler(payload, ack);
+        });
+        // Register a handler for the "MESSAGE" event
+        s.on("MESSAGE", |s: SocketRef, Data::<ClientMessage>(payload)| async move {
+            message_handler(s, payload);
+        });
         // Register a handler for the "LEAVE" event
-        s.on("LEAVE", leave_handler);   
+        s.on("LEAVE", |s: SocketRef, Data::<JoinLeaveRequestData>(payload), ack: AckSender| async move {
+            leave_handler(s, payload, ack);
+        });   
         // Register a handler for the "JOIN" event
         s.on("JOIN", |s: SocketRef, Data::<JoinLeaveRequestData>(payload), ack: AckSender| async move {
             join_handler(s, payload, ack);
@@ -82,7 +103,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         authenticate_clients(s, auth.token, db).await;
     });
 
-    let cors = CorsLayer::new()
+    let _cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any)
         .allow_headers(Any)
@@ -122,7 +143,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ;
 
     let address = SocketAddr::from(([0, 0, 0, 0], port));
-    println!("Server:v3 Started On Port: {}", address);
+    println!("Server:v4 Started On Port: {}", address);
 
     let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
     axum::serve(listener, app).await.unwrap();

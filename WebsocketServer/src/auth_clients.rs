@@ -25,11 +25,12 @@ pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool
    
     if let Some(user) = get_user_from_hash(&auth) {
         if user.connections <= 0 {
-            let _ = socket.emit("ERROR", "💥 Connection Limit Reached 🥹");
+            let _ = socket.emit("ERROR", "💥 Concurrent Connection Limit Reached 🥹");
             let _ = socket.disconnect();
             return;
         }
         decrement_user_connections(&auth);
+        let _ = socket.emit("CONNECTED", "Connection succesfull !");
     } 
 
     // else {
@@ -54,6 +55,7 @@ pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool
                 };
                 add_user_to_hash(auth.clone(), u);
                 println!("User with API Key: {} added to the hashmap ✌️", auth);
+                let _ = socket.emit("CONNECTED", "Connection succesfull !");
             }
             Err(_err) => {
                 let _ = socket.emit("ERROR", "Invalid API Key");
