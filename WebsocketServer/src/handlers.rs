@@ -1,3 +1,4 @@
+use serde_json::json;
 use socketioxide::extract::{
     AckSender, 
     Data, 
@@ -12,10 +13,25 @@ use crate::map::{
 
 use crate::structs::{
     ClientMessage, 
-    JoinLeaveRequestData
+    JoinLeaveRequestData, MyAuthData
 };
 
 use crate::util::devlog;
+
+pub fn info_handler(message: MyAuthData, ack: AckSender) {
+    if let Some(user) = get_user_from_hash(&message.token) {
+        ack.send(json!({
+            "connections": user.connections,
+            "hits": user.hits,
+            "status": "ok"
+        })).ok();
+    }
+    else {
+        let _ = ack.send(json!({
+            "status": "error"
+        }));
+    }
+}
 
 pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSender) {
     // println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
