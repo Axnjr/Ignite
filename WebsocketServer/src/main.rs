@@ -45,6 +45,7 @@ use tower::ServiceBuilder;
 
 use tower_http::cors::{Any, CorsLayer};
 
+use crate::handlers::info_handler;
 use crate::{auth_clients::authenticate_clients, handlers::{join_handler, leave_handler, message_handler}};
 
 #[tokio::main]
@@ -71,6 +72,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         //          let _ = s.emit("server to client event", "Received client to server event");
         //      });
         // ----- Test event ----- //
+        // Register a handler for the "INFO" event
+        s.on("INFO", |Data::<MyAuthData>(payload), ack: AckSender| async move {
+            info_handler(payload, ack);
+        });
+        // Register a handler for the "MESSAGE" event
         s.on("MESSAGE", message_handler);
         // Register a handler for the "LEAVE" event
         s.on("LEAVE", leave_handler);   
@@ -82,7 +88,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         authenticate_clients(s, auth.token, db).await;
     });
 
-    let cors = CorsLayer::new()
+    let _cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any)
         .allow_headers(Any)
