@@ -5,10 +5,7 @@ use std::{
 
 use crate::{
     structs::UserLimits, 
-    util::{
-        get_connection_limit_from_plan_name, 
-        get_request_limit_from_plan_name
-    }
+    util::get_request_limit_from_plan_name
 };
 
 pub static mut CONNECTION_HASH: Mutex<Option<HashMap<String, UserLimits>>> = Mutex::new(None);
@@ -28,7 +25,7 @@ pub fn reset_all_users_values() {
     if let Some(map) = guarded_hash.as_mut() {
         for (_, user) in map.iter_mut() {
             user.hits = get_request_limit_from_plan_name(&user.plan);
-            user.connections = get_connection_limit_from_plan_name(&user.plan);
+            user.connections = 0
         }
     }
 }
@@ -67,11 +64,11 @@ pub fn get_user_from_hash(key: &str) -> Option<UserLimits> {
     }
 }
 
-pub fn decrement_user_connections(key: &str) {
+pub fn increment_user_connections(key: &str) {
     let mut guarded_hash = unsafe { CONNECTION_HASH.lock().unwrap() };
     if let Some(map) = guarded_hash.as_mut() {
         if let Some(user) = map.get_mut(key) {
-            user.connections -= 1;
+            user.connections += 1;
         }
     }
 }
