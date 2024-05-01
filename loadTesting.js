@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
 
 const URL = process.env.URL || "https://ignition-shared-v5.onrender.com/";
-const MAX_CLIENTS = 1000;
+const MAX_CLIENTS = 5000;
 const POLLING_PERCENTAGE = 0.05;
 const CLIENT_CREATION_INTERVAL_IN_MS = 100;
-const EMIT_INTERVAL_IN_MS = 10000;
+const EMIT_INTERVAL_IN_MS = 10;
 
 let clientCount = 0;
 let lastReport = new Date().getTime();
