@@ -30,7 +30,7 @@ export class Ignition {
 		});
 
 		this.#socket.on("ERROR", (message) => { errorLog(message) });
-		this.#socket.on("CONNECTED", (message) => { devLog(chalk.cyanBright(message)) });
+		this.#socket.on("LOG", (message) => { devLog(chalk.cyanBright(message)) });
 		console.log(chalk.cyanBright("Ignition client connecting ........", this.url, this.apiKey));
 		
 	}
@@ -176,13 +176,14 @@ a.on("connect", () => {
 
 
 
-// let b = new Ignition({
-// 	url: "ws://localhost:4000",
-// 	key:"abc123",
-// 	// encryptionKey:"RADHA"
-// })
 
-// b.subscribe("test")
+let b = new Ignition({
+	url: "ws://localhost:4000",
+	key:"abc123",
+	// encryptionKey:"RADHA"
+})
+
+b.subscribe("test")
 
 // b.on("test", (data) => {
 // 	console.log("message recived by `b`:",data)
