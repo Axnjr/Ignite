@@ -23,7 +23,7 @@ export class Ignition {
 		this.groupId = undefined;
 		this.groupCount = 0;
 
-		this.#socket = io("http://localhost:3000", { // public shared ignition websocket server URL - Elastic Ip
+		this.#socket = io("http://localhost:4000", { // public shared ignition websocket server URL - Elastic Ip
 			auth: {
 				token: "abc123",
 			}
@@ -32,6 +32,7 @@ export class Ignition {
 		this.#socket.on("ERROR", (message) => { errorLog(message) });
 		this.#socket.on("CONNECTED", (message) => { devLog(chalk.cyanBright(message)) });
 		console.log(chalk.cyanBright("Ignition client connecting ........", this.url, this.apiKey));
+		
 	}
 
 	ecrypt(message) {
@@ -55,6 +56,7 @@ export class Ignition {
 		},
 		(data) => { // this would be recived by the server & the server will join this client int that room
 			console.log(chalk.cyanBright(data));
+			// this.#socket.disconnect()
 		});
 		// this.#socket.emit("GROUP", groupId);
 		
@@ -161,28 +163,29 @@ export class Ignition {
 // hj.emit("client to server event", "1111111111111111111122222222222222222222333333333333333333333333333334444444444444444")
 
 let a = new Ignition({
-	url: "http://localhost:3000",
-	// apiKey:"abc123",
+	url: "http://localhost:4000",
 	key:"abc123",
 	// encryptionKey:"RADHA"
 })
 
 a.subscribe("test")
 
-a.on("test", (data) => {
-	console.log("message recived by `a`:",data)
+a.on("connect", () => {
+	console.log("CONNECTED ")
 })
 
-let b = new Ignition({
-	url: "ws://localhost:3000",
-	key:"abc123",
-	// encryptionKey:"RADHA"
-})
 
-b.subscribe("test")
 
-b.on("test", (data) => {
-	console.log("message recived by `b`:",data)
-})
+// let b = new Ignition({
+// 	url: "ws://localhost:4000",
+// 	key:"abc123",
+// 	// encryptionKey:"RADHA"
+// })
 
-b.emit("test", "test", "hello world")
+// b.subscribe("test")
+
+// b.on("test", (data) => {
+// 	console.log("message recived by `b`:",data)
+// })
+
+// b.emit("test", "test", "hello world")
