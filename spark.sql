@@ -1,3 +1,5 @@
+-- DEPRECATED
+
 CREATE TABLE IF NOT EXISTS UserDetails ( 
     name TEXT,
     email TEXT,
