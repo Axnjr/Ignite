@@ -1,0 +1,1 @@
+# This is a project I worked on during my internship at Dynamite. I don't know if it ever went into production because I left the company before it was released. But I'm still working on it as a SaaS idea !! 🤓✨🎀💯
