@@ -50,12 +50,16 @@ use crate::{auth_clients::authenticate_clients, handlers::{join_handler, leave_h
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
     dotenv().ok();
+
     init_map();
+
     let subscriber = FmtSubscriber::new();
     tracing::subscriber::set_global_default(subscriber)?;
 
     let url = env::var("DB_URL").expect("DB Connection URL not found ☠️❌😬😱");
+
     let db_client = PgPoolOptions::new()
         .max_connections(5)
         .connect(&url)
