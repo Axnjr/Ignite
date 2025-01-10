@@ -1,5 +1,5 @@
 [package]
-name = "WebsocketServer"
+name = "ignition_shared_v5"
 version = "0.1.0"
 edition = "2021"
 

@@ -111,8 +111,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route(
             "/reset",
             get(|| async move {
-                reset_all_users_values();
-                "MAP RESETED !!"}
+                    reset_all_users_values();
+                    "MAP RESETED !!"
+                }
             )
         )
         .route(

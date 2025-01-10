@@ -3,25 +3,6 @@
 version = 3
 
 [[package]]
-name = "WebsocketServer"
-version = "0.1.0"
-dependencies = [
- "aws-config",
- "aws-sdk-sqs",
- "axum",
- "dotenv",
- "serde",
- "serde_json",
- "socketioxide",
- "sqlx",
- "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1188,6 +1169,25 @@ checksum = "634d9b1461af396cad843f47fdba5597a4f9e6ddd4bfb6ff5d85028c25cb12f6"
 dependencies = [
  "unicode-bidi",
  "unicode-normalization",
+]
+
+[[package]]
+name = "ignition_shared_v5"
+version = "0.1.0"
+dependencies = [
+ "aws-config",
+ "aws-sdk-sqs",
+ "axum",
+ "dotenv",
+ "serde",
+ "serde_json",
+ "socketioxide",
+ "sqlx",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
