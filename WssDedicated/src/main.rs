@@ -75,7 +75,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (layer, io) = SocketIo::builder().build_layer();
 
-    io.ns("/", |s: SocketRef| async move { // , Data::<MyAuthData>(auth)
+    io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move { // , Data::<MyAuthData>(auth)
 
         s.on("JOIN", join_handler);               // Register a handler for the "JOIN" event
 
