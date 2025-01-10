@@ -1,18 +1,14 @@
-<h1 align="center" style="font-size:92px; font-weight: bold; font-family: monospace">
-Robust Real-Time Event Streaming Service in Rust
-</h1>
 
-<div align="center">
 
+  <h1 align="center" style="font-size:92px; font-weight: bold; font-family: monospace">
+  Robust Real-Time Event Streaming Service in Rust
+  
 [![Share on X](https://img.shields.io/badge/share-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20this%20project%20on%20GitHub:%20https://github.com/Axnjr/Ignite%20%23OpenIDConnect%20%23Security%20%23Authentication)
 [![Share on Facebook](https://img.shields.io/badge/share-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/Axnjr/Ignite)
 [![Share on LinkedIn](https://img.shields.io/badge/share-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/Axnjr/Ignite)
 [![Share on Reddit](https://img.shields.io/badge/share-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/submit?title=Check%20out%20this%20project%20on%20GitHub:%20https://github.com/Axnjr/Ignite)
 [![Share on Telegram](https://img.shields.io/badge/share-0088CC?logo=telegram&logoColor=white)](https://t.me/share/url?url=https://github.com/Axnjr/Ignite&text=Check%20out%20this%20project%20on%20GitHub)
-
-</div>
-
----
+  </h1>
 
 ## Overview
 
@@ -72,8 +68,8 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 
 ## Architecture
 
-- **Hobby** and **Pro** requests are handled by the `ignition_shared_v5` container, which is deployed using **AWS Elastic Container Service (ECS)**.  
-- For **Enterprise** clients, a dedicated instance is provisioned with the `dedicated_v2` container for optimal performance. 💥  
+- **Hobby** and **Pro** requests are handled by the [`ignition_shared_v5`](https://github.com/Axnjr/Ignite/tree/main/ignition_shared_v5) container, which is deployed using **AWS Elastic Container Service (ECS)**.  
+- For **Enterprise** clients, a dedicated instance is provisioned with the [`dedicated_v2`](https://github.com/Axnjr/Ignite/tree/main/WssDedicated) container for optimal performance. 💥  
 
 ---
 
@@ -87,4 +83,10 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 
 ---
 
-Feel free to explore and contribute! 🚀  
+## Docker Hub links 🚀
+- [**Public Shared Server**](https://hub.docker.com/r/axnjr/ignition_shared)
+> `docker pull axnjr/ignition_shared:v5`
+- [**Dedicated Private Server**](https://hub.docker.com/r/axnjr/ignition_wssd)
+> `docker pull axnjr/ignition_wssd`
+
+Feel free to explore and contribute!   
