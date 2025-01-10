@@ -84,9 +84,15 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 ---
 
 ## Docker Hub links 🚀
-- [**Public Shared Server**](https://hub.docker.com/r/axnjr/ignition_shared)
-> `docker pull axnjr/ignition_shared:v5`
-- [**Dedicated Private Server**](https://hub.docker.com/r/axnjr/ignition_wssd)
-> `docker pull axnjr/ignition_wssd`
+
+#### [**Public Shared Server**](https://hub.docker.com/r/axnjr/ignition_shared)
+```
+docker pull axnjr/ignition_shared:v5
+```
+
+#### [**Dedicated Private Server**](https://hub.docker.com/r/axnjr/ignition_wssd)
+```
+docker pull axnjr/ignition_wssd
+```
 
 Feel free to explore and contribute!   
