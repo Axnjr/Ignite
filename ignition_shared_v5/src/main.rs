@@ -46,7 +46,15 @@ use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::handlers::info_handler;
-use crate::{auth_clients::authenticate_clients, handlers::{join_handler, leave_handler, message_handler}};
+
+use crate::{
+    auth_clients::authenticate_clients, 
+    handlers::{
+        join_handler, 
+        leave_handler, 
+        message_handler
+    }
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -71,26 +79,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (layer, io) = SocketIo::builder().with_state(db_client).build_layer();
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move { //  Data::<MyAuthData>(auth)
+
         let _ = s.emit("LOG", "PING");
         // ----- Test event ----- //
         //      s.on("client to server event", |s: SocketRef| {
         //          let _ = s.emit("server to client event", "Received client to server event");
         //      });
         // ----- Test event ----- //
+
         // Register a handler for the "INFO" event
         s.on("INFO", |Data::<MyAuthData>(payload), ack: AckSender| async move {
             info_handler(payload, ack);
         });
+
         // Register a handler for the "MESSAGE" event
         s.on("MESSAGE", message_handler);
+
         // Register a handler for the "LEAVE" event
         s.on("LEAVE", leave_handler);   
+
         // Register a handler for the "JOIN" event
         s.on("JOIN", |s: SocketRef, Data::<JoinLeaveRequestData>(payload), ack: AckSender| async move {
             join_handler(s, payload, ack);
         });       
+
         // Authenticate the client with their "auth.token"
         authenticate_clients(s, auth.token, db).await;
+
     });
 
     let _cors = CorsLayer::new()
@@ -100,7 +115,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ;
 
     let app = axum::Router::new()
+
         .with_state(io)
+
         .route(
             "/users",
             get(|| async move {
@@ -108,6 +125,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 get_user_hash_map().unwrap()
             })
         )
+
         .route(
             "/reset",
             get(|| async move {
@@ -116,15 +134,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             )
         )
+
         .route(
             "/upgrade", 
             get(|Query(params): Query<UpgradeKey>| async move { 
                 remove_user_from_hash(&params.key);
         }))
+
         .layer(
             ServiceBuilder::new()
-                .layer(CorsLayer::permissive())
-                .layer(layer),
+            .layer(CorsLayer::permissive())
+            .layer(layer),
         );
 
     let port = std::env::var("PORT")
@@ -134,7 +154,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ;
 
     let address = SocketAddr::from(([0, 0, 0, 0], port));
-    println!("Server:v3 Started On Port: {}", address);
+    println!("Server:v5 Started On Port: {}", address);
 
     let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
     axum::serve(listener, app).await.unwrap();
