@@ -18,9 +18,38 @@ This project was developed during my internship at **Dynamite**.  It serves as a
 
 ---
 
-## Subscription Model
+# Example Usage
+Users need to get their `API_KEY` by creating their account. Hobby users get 100 daily requests and 10 con-current connections to exceed this limit users can subscribe to other paid plans. To interact with `Ignition` you can use the language specific SDK'S, untill now only JS SDK is available 😅, below is sample of how to use it:
+```js
+import Ignition from "ignition-js-sdk";
 
-<table align="center" border="0" cellspacing="14" cellpadding="24" style="width: 100%; text-align: center;">
+let ws = new Ignition({
+    url: process.env.IGNITION_WSS_URL,
+    apiKey: process.env.IGNITION_API_KEY,
+    encryptionKey:"RADHA" // IF YOU WANT TO ENCRYPT YOUR MESSAGES. MESSAGES NEED TO BE DECRYPTED USING THE SAME KEY ON THE OTHER END !
+})
+
+ws.subscribe("test") // eventName
+
+ws.on("test", (data) => { // eventName, callback
+	console.log("message recived by `b`:",data)
+})
+
+ws.emit("test", "test", "hello world") // eventName: String, channelName: String, message: Any
+
+ws.emit("test", "test", {
+  "Name": "Axn",
+  "Age": 21,
+  "Occupation": "SDE"
+})
+
+ws.emit("tes", "test", 56);
+```
+
+
+# Subscription Model
+
+<table border="0" cellspacing="14" cellpadding="24" style="width: 100%; text-align: center;">
   <thead style="background-color: #f2f2f2;">
     <tr>
       <th>Plan</th>
@@ -61,14 +90,14 @@ This project was developed during my internship at **Dynamite**.  It serves as a
 
 ---
 
-## Architecture
+# Architecture
 
 - **Hobby** and **Pro** requests are handled by the [`ignition_shared_v5`](https://github.com/Axnjr/Ignite/tree/main/ignition_shared_v5) container, which is deployed using **AWS Elastic Container Service (ECS)**.  
 - For **Enterprise** clients, a dedicated instance is provisioned with the [`dedicated_v2`](https://github.com/Axnjr/Ignite/tree/main/WssDedicated) container for optimal performance. 💥  
 
 ---
 
-## Features
+# Features
 
 - Scalable real-time event streaming built with **Rust**.
 - Data security and privacy using `AES Encryption`.
@@ -78,7 +107,7 @@ This project was developed during my internship at **Dynamite**.  It serves as a
 
 ---
 
-## Docker Hub links 🚀
+# Docker Hub links 🚀
 
 #### [**Public Shared Server**](https://hub.docker.com/r/axnjr/ignition_shared)
 ```
