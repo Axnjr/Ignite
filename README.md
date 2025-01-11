@@ -1,23 +1,14 @@
-<h1 align="center" style="font-size:92px; font-weight: bold; font-family: monospace">
-Robust Real-Time Event Streaming Service in Rust
-</h1>
-
-<div align="center">
-
+# Robust Real-Time Event Streaming Service in Rust
+  
 [![Share on X](https://img.shields.io/badge/share-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20this%20project%20on%20GitHub:%20https://github.com/Axnjr/Ignite%20%23OpenIDConnect%20%23Security%20%23Authentication)
 [![Share on Facebook](https://img.shields.io/badge/share-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/Axnjr/Ignite)
 [![Share on LinkedIn](https://img.shields.io/badge/share-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/Axnjr/Ignite)
 [![Share on Reddit](https://img.shields.io/badge/share-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/submit?title=Check%20out%20this%20project%20on%20GitHub:%20https://github.com/Axnjr/Ignite)
 [![Share on Telegram](https://img.shields.io/badge/share-0088CC?logo=telegram&logoColor=white)](https://t.me/share/url?url=https://github.com/Axnjr/Ignite&text=Check%20out%20this%20project%20on%20GitHub)
 
-</div>
+# Overview
 
----
-
-## Overview
-
-This project was developed during my internship at **Dynamite**.  
-It serves as a **MonoRepo** for all the Rust backend components used in the project.  
+This project was developed during my internship at **Dynamite**.  It serves as a **MonoRepo** for all the `Rust backend` components used in the project.  
 
 ### Other Components:
 - [**The Web App**](https://github.com/Axnjr/Ignition-Web)  
@@ -27,9 +18,38 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 
 ---
 
-## Subscription Model
+# Example Usage
+Users need to get their `API_KEY` by creating their account. Hobby users get 100 daily requests and 10 con-current connections to exceed this limit users can subscribe to other paid plans. To interact with `Ignition` you can use the language specific SDK'S, untill now only JS SDK is available 😅, below is sample of how to use it:
+```js
+import Ignition from "ignition-js-sdk";
 
-<table align="center" border="0" cellspacing="14" cellpadding="24" style="width: 100%; text-align: center;">
+let ws = new Ignition({
+    url: process.env.IGNITION_WSS_URL,
+    apiKey: process.env.IGNITION_API_KEY,
+    encryptionKey:"RADHA" // IF YOU WANT TO ENCRYPT YOUR MESSAGES. MESSAGES NEED TO BE DECRYPTED USING THE SAME KEY ON THE OTHER END !
+})
+
+ws.subscribe("test") // eventName
+
+ws.on("test", (data) => { // eventName, callback
+	console.log("message recived by `b`:",data)
+})
+
+ws.emit("test", "test", "hello world") // eventName: String, channelName: String, message: Any
+
+ws.emit("test", "test", {
+  "Name": "Axn",
+  "Age": 21,
+  "Occupation": "SDE"
+})
+
+ws.emit("tes", "test", 56);
+```
+
+
+# Subscription Model
+
+<table border="0" cellspacing="14" cellpadding="24" style="width: 100%; text-align: center;">
   <thead style="background-color: #f2f2f2;">
     <tr>
       <th>Plan</th>
@@ -70,14 +90,14 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 
 ---
 
-## Architecture
+# Architecture
 
-- **Hobby** and **Pro** requests are handled by the `ignition_shared_v5` container, which is deployed using **AWS Elastic Container Service (ECS)**.  
-- For **Enterprise** clients, a dedicated instance is provisioned with the `dedicated_v2` container for optimal performance. 💥  
+- **Hobby** and **Pro** requests are handled by the [`ignition_shared_v5`](https://github.com/Axnjr/Ignite/tree/main/ignition_shared_v5) container, which is deployed using **AWS Elastic Container Service (ECS)**.  
+- For **Enterprise** clients, a dedicated instance is provisioned with the [`dedicated_v2`](https://github.com/Axnjr/Ignite/tree/main/WssDedicated) container for optimal performance. 💥  
 
 ---
 
-## Features
+# Features
 
 - Scalable real-time event streaming built with **Rust**.
 - Data security and privacy using `AES Encryption`.
@@ -87,4 +107,16 @@ It serves as a **MonoRepo** for all the Rust backend components used in the proj
 
 ---
 
-Feel free to explore and contribute! 🚀  
+# Docker Hub links 🚀
+
+#### [**Public Shared Server**](https://hub.docker.com/r/axnjr/ignition_shared)
+```
+docker pull axnjr/ignition_shared:v5
+```
+
+#### [**Dedicated Private Server**](https://hub.docker.com/r/axnjr/ignition_wssd)
+```
+docker pull axnjr/ignition_wssd
+```
+
+Feel free to explore and contribute!   
