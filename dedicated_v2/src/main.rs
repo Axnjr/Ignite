@@ -27,7 +27,7 @@ use std::{
 };
 
 use tower::ServiceBuilder;
-use http::header::CONTENT_TYPE;
+// use http::header::CONTENT_TYPE;
 use tower_http::cors::{
     Any, 
     CorsLayer
@@ -77,6 +77,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     io.ns("/", |s: SocketRef, Data::<MyAuthData>(auth)| async move { // , Data::<MyAuthData>(auth)
 
+        println!("IO NAMESPACE \n WORKING !! AUTH: {}", auth.token);
+
         s.on("JOIN", join_handler);               // Register a handler for the "JOIN" event
 
         s.on("MESSAGE", |s: SocketRef, Data::<Value>(payload)| async move {
@@ -91,7 +93,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         authenticate_clients(s, auth).await;     // Authenticate the client with their "auth.token"
     });
 
-    let cors = CorsLayer::new()
+    let _cors_may_be_required_in_future = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any)
         .allow_headers(Any)
@@ -100,15 +102,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = axum::Router::new()
         .with_state(io)
         .route("/test", get(|| async move { println!("Test Route"); "Test Route" } ))
-        // .layer(cors)//ServiceBuilder::new().layer(CorsLayer::permissive()))
-        // .layer(layer)
         .layer(
             ServiceBuilder::new()
                 .layer(CorsLayer::permissive())
                 .layer(layer),
         );
+        // .layer(cors)//ServiceBuilder::new().layer(CorsLayer::permissive()))
+        // .layer(layer)
         // .layer(cors)
-    ;
 
     let port = std::env::var("PORT")
         .ok()
