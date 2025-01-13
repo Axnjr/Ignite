@@ -5,7 +5,7 @@ use socketioxide::extract::{
     SocketRef
 };
 
-use crate::map::{
+use crate::dashmap::{
     decrement_user_hits, 
     get_user_from_hash, 
     remove_user_from_hash
@@ -34,12 +34,12 @@ pub fn info_handler(message: MyAuthData, ack: AckSender) {
 }
 
 pub fn join_handler(socket: SocketRef, message: JoinLeaveRequestData, ack: AckSender) {
-    // println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
+    println!("👀🤗🫡 Received Join Group Request for Room: {:?}", message);
     decrement_user_hits(&message.key);
     // let _ = socket.leave_all();
     devlog(&format!("Recived a join request from {:?}", message));
     let _ = socket.join(message.group_id.clone());
-    ack.send("Joined the group !!").ok();
+    ack.send("Joined the group 💯💯🧠 !!").ok();
 }
 
 pub fn leave_handler(socket: SocketRef, Data(room): Data<JoinLeaveRequestData>, ack: AckSender) {
