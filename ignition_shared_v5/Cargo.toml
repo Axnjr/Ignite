@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# aws-sdk-sqs = "1.1.7"
+# aws-config = { version = "1.1.8", features = ["behavior-version-latest"] }
 
 [dependencies]
 
@@ -13,10 +15,11 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tower = "0.4.13"
 tower-http = { version = "0.5", features = ["cors"]}
-aws-sdk-sqs = "1.1.7"
-aws-config = { version = "1.1.8", features = ["behavior-version-latest"] }
 dotenv = "0.15.0"
 socketioxide = { version = "0.12.0", features = ["state"] }
 sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio-rustls"] }
 tracing-subscriber = "0.3.18"
 tracing = "0.1.40"
+dashmap = { version = "*" }
+chrono = "0.4.39"
+lru = "0.12.5"
