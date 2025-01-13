@@ -1,3 +1,5 @@
+/// Deprecated now I'm using a Dashmap for thread-safe lazy instantiation of static variables i.e User HashMap !
+
 use std::{
     collections::HashMap, 
     sync::Mutex
