@@ -2,11 +2,32 @@ use socketioxide::extract::SocketRef;
 
 use sqlx::{Pool, Postgres, Row};
 
-use crate::map::{add_user_to_hash, decrement_user_hits, get_user_from_hash, increment_user_connections};
+use crate::dashmap::{add_user_to_hash, decrement_user_hits, get_user_from_hash, increment_user_connections};
 
 use crate::structs::UserLimits; 
 
 use crate::util::get_request_limit_from_plan_name;
+
+pub async fn authenticate_test_clients(socket: SocketRef, auth: String){
+
+    if let Some(user) = get_user_from_hash(&auth) {
+        if user.hits <= 0 {
+            let _ = socket.emit("ERROR", "💥 Daily request Limit Reached 🥹");
+            let _ = socket.disconnect();
+            return;
+        }
+        increment_user_connections(&auth);
+        decrement_user_hits(&auth);
+    } 
+
+    else {
+        add_user_to_hash(auth.clone(), UserLimits {
+            hits: 100,
+            connections: 10,
+            plan: "Hobby".to_owned(),
+        })
+    }
+}
 
 pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool<Postgres>) {
 
@@ -30,16 +51,8 @@ pub async fn authenticate_clients(socket: SocketRef, auth: String, db_sate: Pool
         decrement_user_hits(&auth);
     } 
 
-    // else {
-    //     add_user_to_hash(auth.clone(), UserLimits {
-    //         hits: 100,
-    //         connections: 10,
-    //         plan: "Hobby".to_owned(),
-    //     })
-    // }
-
     else {
-        match sqlx::query(&format!(r#" SELECT * FROM userkeystatus WHERE apiKey = '{}'; "#,auth))
+        match sqlx::query(&format!(r#" SELECT * FROM userkeystatus WHERE apiKey = '{}'; "#, auth))
             .fetch_one(&db_sate)
             .await
         {
