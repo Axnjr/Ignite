@@ -15,7 +15,9 @@ function errorLog(...args) {
 }
 
 export class Ignition {
+
 	#socket;#encryptionKey;
+
 	constructor(config) {
 		this.url = config.url;
 		this.#encryptionKey = config.encryptionKey;
@@ -23,9 +25,9 @@ export class Ignition {
 		this.groupId = undefined;
 		this.groupCount = 0;
 
-		this.#socket = io("http://localhost:4000", { // public shared ignition websocket server URL - Elastic Ip
+		this.#socket = io(this.url, { // public shared ignition websocket server URL - Elastic Ip
 			auth: {
-				token: "abc123",
+				token: "abc12387878787",
 			}
 		});
 
@@ -59,7 +61,6 @@ export class Ignition {
 			// this.#socket.disconnect()
 		});
 		// this.#socket.emit("GROUP", groupId);
-		
 	}
 
 	async unsubscribe(groupId) {
@@ -87,6 +88,7 @@ export class Ignition {
 
 		console.log("EMITITING: -> ",this.#encryptionKey ? this.ecrypt(message) : message)
 
+		// ^ FOR SHARED WSS:
 		// pub struct ClientMessage {
 		//     pub group_id: String,
 		//     pub event_name: String,
@@ -94,12 +96,26 @@ export class Ignition {
 		//     pub key: String,
 		// }
 
+		// ^ FOR DEDICATED WSS:
+		// struct ClientPayload {
+		// 	event: String,
+		// 	room: String,
+		// 	message: String,
+		// }
+
 		devLog("EMITTING EVENT !!")
+
+		// this.#socket.emit("MESSAGE", {
+		// 	group_id: this.apiKey + "_" + groupId,
+		// 	event_name: eventName,
+		// 	message: this.#encryptionKey ? this.ecrypt(message) : message,
+		// 	key: this.apiKey
+		// })
+
 		this.#socket.emit("MESSAGE", {
-			group_id: this.apiKey + "_" + groupId,
-			event_name: eventName,
+			event: eventName,
+			room: this.apiKey + "_" + groupId,
 			message: this.#encryptionKey ? this.ecrypt(message) : message,
-			key: this.apiKey
 		})
 	}
 
@@ -162,31 +178,34 @@ export class Ignition {
 
 // hj.emit("client to server event", "1111111111111111111122222222222222222222333333333333333333333333333334444444444444444")
 
-let a = new Ignition({
-	url: "http://localhost:4000",
-	key:"abc123",
-	// encryptionKey:"RADHA"
-})
+// let a = new Ignition({
+// 	url: "http://localhost:4000",
+// 	key:"abc123",
+// 	// encryptionKey:"RADHA"
+// })
 
-a.subscribe("test")
+// a.subscribe("test")
 
-a.on("connect", () => {
-	console.log("CONNECTED ")
-})
-
-
+// a.on("connect", () => {
+// 	console.log("CONNECTED ")
+// })
 
 
-let b = new Ignition({
-	url: "ws://localhost:4000",
-	key:"abc123",
-	// encryptionKey:"RADHA"
-})
 
-b.subscribe("test")
+
+
 
 // b.on("test", (data) => {
 // 	console.log("message recived by `b`:",data)
 // })
 
-// b.emit("test", "test", "hello world")
+// for(let i = 0; i < 100; i++) {
+	let b = new Ignition({
+		url: "http://127.0.0.1:4000/testing",
+		key:"abc123==***(((((((((((((((((((((((",
+		encryptionKey:"RADHA"
+	})
+	
+	b.subscribe("test")
+	b.emit("test", "test", "hello world")
+// }
