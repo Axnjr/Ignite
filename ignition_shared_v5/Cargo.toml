@@ -22,4 +22,3 @@ tracing-subscriber = "0.3.18"
 tracing = "0.1.40"
 dashmap = { version = "*" }
 chrono = "0.4.39"
-lru = "0.12.5"
