@@ -28,7 +28,7 @@ pub fn log_messages_to_log_file(message: &str, level: &str) {
 
             let _ = writeln!(
                 logfile, 
-                "[{}] | [{}]    :   {}", 
+                "[{}] | [ {} ]    :   {}", 
                 timestamp, 
                 level, 
                 "Unable to acquire write access on log file, Recovered from poisoned mutex. Logging might be inconsistent."
@@ -53,7 +53,7 @@ pub fn log_messages_to_log_file(message: &str, level: &str) {
 
     if let Err(e) = writeln!(
         logfile,
-        "[{}] | [{}]    :   {}",
+        "[{}] | [ {} ]    :   {}",
         timestamp,
         level,
         message
@@ -80,7 +80,7 @@ pub fn log_and_panic<T>(message: &str) -> T {
 
             let _ = writeln!(
                 logfile, 
-                "[{}] | [{}]    :   {}", 
+                "[{}] | [ {} ]    :   {}", 
                 timestamp, 
                 "ERROR", 
                 "Recovered from poisoned mutex while panicing. Logging might be inconsistent."
@@ -92,7 +92,7 @@ pub fn log_and_panic<T>(message: &str) -> T {
 
     let _ = writeln!(
         logfile,
-        "[{}] | [{}]  :   {}", 
+        "[{}] | [ {} ]  :   {}", 
         timestamp, 
         "ERROR", 
         message
