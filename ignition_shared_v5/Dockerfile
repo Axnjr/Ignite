@@ -31,10 +31,11 @@ FROM debian:stable-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage to the runtime container
-COPY --from=builder /target/release/WebsocketServer /target/release/WebsocketServer
+COPY --from=builder /target/release/ignition_shared_v5 /target/release/ignition_shared_v5
+# /target/release/WebsocketServer /target/release/WebsocketServer
 
 # Expose the port the server listens on
 EXPOSE 3000
 
 # Command to run the executable
-CMD ["/target/release/WebsocketServer"]
+CMD ["/target/release/ignition_shared_v5"]

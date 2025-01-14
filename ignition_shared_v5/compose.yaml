@@ -10,7 +10,7 @@
 services:
   server:
     build:
-      command: /target/release/WebsocketServer
+      command: /target/release/ignition_shared_v5
       context: .
       # target: final
       dockerfile: Dockerfile
