@@ -25,11 +25,13 @@ export class Ignition {
 		this.groupId = undefined;
 		this.groupCount = 0;
 
-		this.#socket = io(this.url, { // public shared ignition websocket server URL - Elastic Ip
-			auth: {
-				token: "abc12387878787",
-			}
-		});
+		// this.#socket = io(this.url, { // public shared ignition websocket server URL - Elastic Ip
+		// 	auth: {
+		// 		token: "abc12387878787",
+		// 	}
+		// });
+
+		this.#socket = io(this.url + "/" + this.apiKey);
 
 		this.#socket.on("ERROR", (message) => { errorLog(message) });
 		this.#socket.on("LOG", (message) => { devLog(chalk.cyanBright(message)) });
@@ -201,8 +203,8 @@ export class Ignition {
 
 // for(let i = 0; i < 100; i++) {
 	let b = new Ignition({
-		url: "http://127.0.0.1:4000/testing",
-		key:"abc123==***(((((((((((((((((((((((",
+		url: "http://127.0.0.1:4000",
+		key:"abc123",
 		encryptionKey:"RADHA"
 	})
 	
