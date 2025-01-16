@@ -1,0 +1,21 @@
+[Jan 16 06:11:47] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 06:11:59] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:02] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:04] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:05] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:06] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:35] | [INFO.]    :   Log file was read.
+[Jan 16 06:12:44] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:46] | [INFO.]    :   Log file was read.
+[Jan 16 06:12:51] | [DEBUG]    :   `/users` Route invoked.
+[Jan 16 06:12:54] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 06:18:34] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 06:18:40] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 06:18:52] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 06:18:59] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 06:18:59] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 06:19:07] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 06:19:36] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 06:19:44] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 06:21:29] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 06:21:31] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
