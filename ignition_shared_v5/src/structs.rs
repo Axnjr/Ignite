@@ -5,9 +5,10 @@ use serde::{
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserLimits {
-    pub hits: i64,
-    pub connections: i64,
+    pub hits: usize,
+    pub connections: usize,
     pub plan: String,
+    // pub lru_pos: usize,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
