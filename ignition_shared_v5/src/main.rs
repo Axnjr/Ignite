@@ -7,37 +7,36 @@ mod macros;
 mod structs;
 mod tcp;
 mod lru;
-mod util;
 mod io_register;
+mod env_vars;
 
+use logging::log_messages_to_log_file;
 use dashmap::init_map;
 use io_register::register_ws_io_handlers;
 use tcp::initialize_tcp_router;
-use logging::{log_and_panic, log_messages_to_log_file};
+use env_vars::SERVER_CONFIG;
 
 use tokio::signal;
 use tracing_subscriber::FmtSubscriber;
 use socketioxide::SocketIo;
 use sqlx::postgres::PgPoolOptions;
-use dotenv::dotenv;
-use std::{env, net::SocketAddr};
+use std::net::SocketAddr;
 
-struct Config {
-    db_url: String,
-    max_connections: u32,
-    port: u16,
+pub fn get_request_limit_from_plan_name(val: &str) -> usize {
+    match val {
+        "Hobby" => 500,
+        "Pro" => 1000000,
+        "StartUp" => 5000000,
+        _ => 0,
+    }
 }
 
-impl Config {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
-        dotenv().ok(); // Load .env variables
-        Ok(Self {
-            db_url: env::var("DB_URL")?,
-            port: env::var("PORT")
-                .unwrap_or_else(|_| "3000".to_string())
-                .parse()?,
-            max_connections: env::var("MAX_DB_CONNECTIONS")?.parse().unwrap(),
-        })
+pub fn get_connection_limit_from_plan_name(val: &str) -> usize {
+    match val {
+        "Hobby" => 10,
+        "Pro" => 500,
+        "StartUp" => 5000,
+        _ => 0,
     }
 }
 
@@ -46,10 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     init_map();
 
-    let server_config = log_if_panic!(
-        Config::from_env, 
-        "Error reading enviroment variables !!"
-    );
+    let server_config = &SERVER_CONFIG;
 
     let subscriber = FmtSubscriber::new();
     tracing::subscriber::set_global_default(subscriber)?;
