@@ -11,7 +11,6 @@ use crate::auth_clients::authenticate_test_clients;
 
 pub fn register_ws_io_handlers(io: &SocketIo, db: Pool<Postgres>) {
 
-    // # FOR TESTING BOTH CLOSURES CANT WORK AT SAME TIME BECAUSE I DONT WANT TO CLONE 'io' AGAIN !!
     let _ = io.dyn_ns("/testing/{client_id}", |s: SocketRef, io: SocketIo| async move {
 
         let auth_token = s.ns().to_string();
