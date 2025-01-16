@@ -3,7 +3,7 @@ use dashmap::DashMap;
 use std::sync::LazyLock;
 use crate::{
     structs::UserLimits, 
-    util::get_request_limit_from_plan_name,
+    get_request_limit_from_plan_name,
     lru::LruCache
 };
 

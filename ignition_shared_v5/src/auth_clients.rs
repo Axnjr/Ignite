@@ -2,7 +2,7 @@ use socketioxide::extract::SocketRef;
 use sqlx::{Pool, Postgres, Row};
 use crate::dashmap::{add_user_to_hash, decrement_user_hits, get_user_from_hash};
 use crate::structs::UserLimits; 
-use crate::util::{get_connection_limit_from_plan_name, get_request_limit_from_plan_name};
+use crate::{get_connection_limit_from_plan_name, get_request_limit_from_plan_name};
 
 pub async fn authenticate_test_clients(socket: SocketRef, auth: &str, connections: usize){
 
