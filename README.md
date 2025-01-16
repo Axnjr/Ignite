@@ -1,4 +1,4 @@
-# 💥Robust Real-Time Event Streaming Service in Rust 🦀
+# 💥 Ignition - Robust Real-Time Event Streaming Service in Rust 🦀
   
 [![Share on X](https://img.shields.io/badge/share-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20this%20project%20on%20GitHub:%20https://github.com/Axnjr/Ignite%20%23OpenIDConnect%20%23Security%20%23Authentication)
 [![Share on Facebook](https://img.shields.io/badge/share-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/Axnjr/Ignite)
