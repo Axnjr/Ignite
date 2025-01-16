@@ -11,12 +11,12 @@ macro_rules! log_message {
     };
 }
 
-#[macro_export]
-macro_rules! log_if_panic {
-    ($code_block: expr, $message: expr) => {
-        $code_block().unwrap_or_else(|_| log_and_panic($message))
-    };
-}
+// #[macro_export]
+// macro_rules! log_if_panic {
+//     ($code_block: expr, $message: expr) => {
+//         $code_block().unwrap_or_else(|_| log_and_panic($message))
+//     };
+// }
 
 /// the below macro takes a async code block 
 /// awaits the result and then matches it with 

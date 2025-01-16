@@ -3,6 +3,7 @@ use std::io::Write;
 use std::sync::Mutex;
 use std::sync::LazyLock;
 use chrono::Local;
+use crate::SERVER_CONFIG;
 
 const MAX_LOG_FILE_SIZE: u64 = 10 * 1024 * 1024; // 10 MB
 
@@ -17,20 +18,29 @@ static LOG_FILE: LazyLock<Mutex<File>> = LazyLock::new(|| {
     )
 });
 
-pub fn log_messages_to_log_file(message: &str, level: &str) {
+pub fn log_messages_to_log_file(message: &str, mut level: &str) {
+
+    if level == "INFO" {
+        level = "INFO.";
+    }
+
+    if level == "DEBUG" && SERVER_CONFIG.mode == "PROD" {
+        return;
+    }
 
     let timestamp = Local::now().format("%b %d %H:%M:%S").to_string();
 
     let mut logfile = LOG_FILE
         .lock()
         .unwrap_or_else(|poisoned| {
+
             let mut logfile = poisoned.into_inner();
 
             let _ = writeln!(
                 logfile, 
-                "[{}] | [ {} ]    :   {}", 
+                "[{}] | [{}]    :   {}", 
                 timestamp, 
-                level, 
+                "ERROR", 
                 "Unable to acquire write access on log file, Recovered from poisoned mutex. Logging might be inconsistent."
             );
 
@@ -53,7 +63,7 @@ pub fn log_messages_to_log_file(message: &str, level: &str) {
 
     if let Err(e) = writeln!(
         logfile,
-        "[{}] | [ {} ]    :   {}",
+        "[{}] | [{}]    :   {}",
         timestamp,
         level,
         message
@@ -80,7 +90,7 @@ pub fn log_and_panic<T>(message: &str) -> T {
 
             let _ = writeln!(
                 logfile, 
-                "[{}] | [ {} ]    :   {}", 
+                "[{}] | [{}]    :   {}", 
                 timestamp, 
                 "ERROR", 
                 "Recovered from poisoned mutex while panicing. Logging might be inconsistent."
@@ -92,7 +102,7 @@ pub fn log_and_panic<T>(message: &str) -> T {
 
     let _ = writeln!(
         logfile,
-        "[{}] | [ {} ]  :   {}", 
+        "[{}] | [{}]  :   {}", 
         timestamp, 
         "ERROR", 
         message
