@@ -48,6 +48,7 @@ pub fn register_ws_io_handlers(io: &SocketIo, db: Pool<Postgres>) {
         // i read this after implementing it below and else where in the code, but I;ve raised a PR
         // requesting the feature until then this code is commented !!
 
+        // # each time a new user connects with their dynamic namespace we invalidate the user connection count.
         let namespace_size = io.of(s.ns()).unwrap().sockets().unwrap().len();
 
         s.on(
