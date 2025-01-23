@@ -8,7 +8,7 @@
 
 # Overview 
 
-This project was developed during my internship at **Dynamite**.  It serves as a **MonoRepo** for all the `Rust backend` components used in the project.  
+I worked on this project during my internship at **Dynamite** in the notifications team, later I decided to continue the project as SaaS side hustle.  This repository serves as a **MonoRepo** for all the `Rust` components involved in the project.  
 
 ### Other Components:
 - [**The Web App**](https://github.com/Axnjr/Ignition-Web)  
