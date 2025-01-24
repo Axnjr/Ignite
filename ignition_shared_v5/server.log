@@ -19,3 +19,19 @@
 [Jan 16 06:19:44] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
 [Jan 16 06:21:29] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
 [Jan 16 06:21:31] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 14:44:53] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 14:45:41] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 14:47:51] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 14:47:54] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:47:54] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:48:04] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 14:50:10] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 14:50:14] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:50:14] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:50:26] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:50:26] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "abc123_test" }
+[Jan 16 14:50:41] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
+[Jan 16 14:51:54] | [INFO.]    :   Server:v5 Started On Port: 0.0.0.0:4000
+[Jan 16 14:51:57] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "test" }
+[Jan 16 14:51:57] | [DEBUG]    :   Recived a join request from JoinLeaveRequestData { key: "abc123", group_id: "test" }
+[Jan 16 14:53:26] | [DEBUG]    :   Server stopped due to Ctrl+c signal.
