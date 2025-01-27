@@ -293,8 +293,54 @@ fn main() {
 
 }
 
+// ^ USE OF 'dyn' KEYWORD !!
 
-// ! UNDERSTANDLE RUST Behaviour:
+// ^ WE CANT JUST SPECIFY A TRAIT AS A RETURN TYPE IN RUST, 
+// ^ BECAUSE RETURN TYPE OF A FUNCTION IN RUST MUST HAVE A CONCRETE TYPE,
+// ^ SO AS A WORKAROUND WE CAN USE A 'Box' WITH 'dyn' KEYWORD: 
+// ! EXPLANATION: box is just a reference to some memory in the heap. Because a reference has a statically-known size, and the compiler can guarantee it points to a heap-allocated Animal, we can return a trait from our function!
+
+// The Rust compiler needs to know how much space every function's return type requires. 
+// This means all your functions have to return a concrete type. Unlike other languages, 
+// if you have a trait like Animal, you can't write a function that returns Animal, 
+// because its different implementations will need different amounts of memory.
+
+// However, there's an easy workaround. Instead of returning a trait object directly, 
+// our functions return a Box which contains some Animal.
+
+struct Sheep {}
+struct Cow {}
+
+trait Animal {
+    // Instance method signature
+    fn noise(&self) -> &'static str;
+}
+
+// Implement the `Animal` trait for `Sheep`.
+impl Animal for Sheep {
+    fn noise(&self) -> &'static str {
+        "baaaaah!"
+    }
+}
+
+// Implement the `Animal` trait for `Cow`.
+impl Animal for Cow {
+    fn noise(&self) -> &'static str {
+        "moooooo!"
+    }
+}
+
+// Returns some struct that implements Animal, but we don't know which one at compile time.
+fn random_animal(random_number: f64) -> Box<dyn Animal> {
+    if random_number < 0.5 {
+        Box::new(Sheep {})
+    } else {
+        Box::new(Cow {})
+    }
+}
+
+
+// ! UN-UNDERSTANDLE RUST Behaviour:
 // let mut count = 0;
 // A closure to increment `count` could take either `&mut count` or `count`
 // but `&mut count` is less restrictive so it takes that. Immediately
